@@ -1,0 +1,57 @@
+- put the functions in the controller and the routes in the router and then import these in the app.js
+- to be able to acceess the json data in the req.body use: app.use(express.json())
+- the full base path will be written in app.js (app.use('./api/v1/poeple', people)) then in the route write only "/" (router.route('/', function))
+- defining schema in mongoDB helps to keep clean database where extra non defined properties will be ignored and not stored in DB
+- to avoid sending emtpy data use validation
+- to avoid mistakes in rendering the old value instead of the new updated one add this obj {new: true, runValidators} as third param to 
+findAndUpdate mongoose function (the runValidators is to turn it on while updating data)
+- PUT vs PATCH: put replaces the whole existing object whereas patch only updates part of the data (patch=update, put=replace here in the 
+case of put add overwrite:true in third param object of findAndUpdate function )
+
+#### 04-Store-API #################
+- to avoid writing try catch for every route OR creating costumized async error Wrapper, use a package "express-async-errors", add it 
+as dependency in pacakge.json then use it by throwing the error directly where necessary using "throw" keyword
+- no need to use "next" when handling errors using the package package "express-async-errors" 
+- for sorting, selecting fields, filtering .. and use destructuring:
+const { featured, company, name, sort, fields, numericFilters } = req.query;
+- for required fileds, use "required" keyword in the model inside mongoose.Schema: 
+ name: {
+    type: String,
+    required: [true, "product name must be provided"],
+  },
+  
+- for user friendly symbols in api urls use mapper to map them to mongoose corresponding symbols:    
+const operatorMap = {
+      ">": "$gt",
+      ">=": "$gte",
+      "=": "$eq",
+      "<": "$lt",
+      "<=": "$lte",
+    }; 
+then use regular expression for filtering: const reqGex = /\b(>|>=|=|<=|<)\b/g;
+- 
+
+
+############# 05-JWT-Basics #############
+- for authentication use JWT library (details in : jwt.io)
+- for token signature: use package jsonwebtoken:  npm install jsonwebtoken
+- perform the signature using the recieved username in the req in the login function in the controller folder
+- decode the token (jwt.verify) in the authMiddleware and pass it to dashboard function in the controller folder using next() keyword
+- for using stauts codes install the packge "http-status-codes" 
+
+
+########## 06-jobs-api ################
+- to check for valid emails use regex (match keyword) in mongodb schema:  
+match: [/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(
+([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, "Please provide a valid email",],
+
+- NEVER STORE PASSWORDS as strings, rather store thier hashs
+- for hashing the password "bcryptjs" library can be used, this library has also a method (bcrypt.compare) to compare two hashed passwords 	
+- generate all keys can be used to generate a secure key
+- to authomatically set the token in postmann use the following code in login and register in in Tests tab in postmann (also check out 
+Bearer Token option under Authtization tab):
+// pm for postmann
+const jsonData = pm.response.json()
+pm.globals.set("accessToken", jsonData.token)
+
+- 
